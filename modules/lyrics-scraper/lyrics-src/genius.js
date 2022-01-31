@@ -31,10 +31,13 @@ const extractLyrics = async (url) => {
  * @param {number} count
  */
 const getResults = async (query, count = 3) => {
-    const apiKey = 'h2VsUfA5XIqiB_54ig7o8kb6kVIP9GadBiV3VYhWELibaG8mRJn3P5kfVWZjfkXl';
-    const searchUrl = 'https://api.genius.com/search?q=';
-    const reqUrl = `${searchUrl}${encodeURIComponent(query)}`;
-    let { data } = await axios.get(`${reqUrl}&access_token=${apiKey}`);
+    if (!process.env.GENIUS_ACCESS_TOKEN) return [];
+    const url = 'https://api.genius.com/search';
+    const opt = {
+        q: encodeURIComponent(query),
+        access_token: process.env.GENIUS_ACCESS_TOKEN,
+    };
+    let { data } = await axios.get(url, { params: opt });
     if (data.response.hits.length === 0) return [];
     const results = data.response.hits.slice(0, count).map((val) => {
         const { full_title, url, primary_artist } = val.result;
