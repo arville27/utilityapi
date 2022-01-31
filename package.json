@@ -1,0 +1,21 @@
+{
+    "name": "utilityapi",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "nodemon ."
+    },
+    "dependencies": {
+        "express": "^4.17.2",
+        "lyrics-scraper": "file:./modules/lyrics-scraper",
+        "malscraper": "file:./modules/MALScraper"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "nodemon": "^2.0.15"
+    }
+}

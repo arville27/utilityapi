@@ -1,0 +1,6 @@
+[submodule "MALScraper"]
+	path = MALScraper
+	url = https://github.com/arville27/MALScraper
+[submodule "modules/MALScraper"]
+	path = modules/MALScraper
+	url = https://github.com/arville27/MALScraper
