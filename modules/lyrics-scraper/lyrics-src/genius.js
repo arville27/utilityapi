@@ -30,7 +30,7 @@ const extractLyrics = async (url) => {
  * @param {string} query
  * @param {number} count
  */
-const getResults = async (query, count = 3) => {
+const getResults = async (query, count = 5) => {
     if (!process.env.GENIUS_ACCESS_TOKEN) return [];
     const url = 'https://api.genius.com/search';
     const opt = {
