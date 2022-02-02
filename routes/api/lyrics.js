@@ -4,7 +4,7 @@ const express = require('express');
 const lyrics = express.Router();
 
 lyrics.get('/:id?', async (req, res) => {
-    if (!req.query.q) return res.status(404).json({ code: 404, message: 'query required' });
+    if (!req.query.q) return res.status(404).json({ status: 'ERROR', message: 'query required' });
     let provider = [Provider.LN, Provider.GENIUS];
     if (req.query.p) {
         switch (req.query.p) {
@@ -17,7 +17,12 @@ lyrics.get('/:id?', async (req, res) => {
         }
     }
 
-    const results = await searchLyrics(req.query.q, provider);
+    let results = null;
+    try {
+        results = await searchLyrics(req.query.q, provider)
+    } catch (error) {
+        return res.header('Content-Type', 'application/json').json({status: 'OK', results: []})
+    }
 
     let index = null;
     if (req.params.id) index = parseInt(req.params.id) - 1;
@@ -30,16 +35,18 @@ lyrics.get('/:id?', async (req, res) => {
     if (req.params.id) {
         if (index >= 0 && index < results.length) {
             const lyrics = await results[index].lyrics();
-            return res.json({ ...results[index], lyrics });
-        } else return res.json({ code: 404, message: 'index out of range' });
+            return res.json({ status: 'OK', ...results[index], lyrics });
+        } else return res.json({ status: 'ERROR', message: 'index out of range' });
     }
 
-    return res.json(
-        results.map((item, index) => {
+    return res.json({
+        status: 'OK',
+        results: results.map((item, index) => {
             item.lyrics = `${constructContentUri(req, index + 1)}`;
             item.lyricsOnly = `${constructContentUri(req, index + 1)}&lyricsonly=1`;
             return item;
         })
+    }
     );
 });
 
