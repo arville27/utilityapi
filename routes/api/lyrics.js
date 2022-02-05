@@ -6,22 +6,39 @@ const lyrics = express.Router();
 lyrics.get('/:id?', async (req, res) => {
     if (!req.query.q) return res.status(404).json({ status: 'ERROR', message: 'query required' });
     let provider = [Provider.LN, Provider.GENIUS];
-    if (req.query.p) {
-        switch (req.query.p) {
-            case 'ln':
-                provider = [Provider.LN];
-                break;
-            case 'genius':
-                provider = [Provider.GENIUS];
-                break;
+    if (typeof req.query.q === 'string') {
+        if (req.query.p) {
+            switch (req.query.p) {
+                case 'ln':
+                    provider = [Provider.LN];
+                    break;
+                case 'genius':
+                    provider = [Provider.GENIUS];
+                    break;
+                default:
+                    provider = [];
+            }
         }
+    } else {
+        provider = req.query.q.filter((provider) => ['ln', 'genius'].includes(provider));
+    }
+
+    if (provider.length === 0) {
+        return res.status(404).header('Content-Type', 'application/json').json({
+            status: 'ERROR',
+            message: 'Please provide a valid lyrics provider',
+        });
     }
 
     let results = null;
     try {
-        results = await searchLyrics(req.query.q, provider)
+        results = await searchLyrics(req.query.q, provider);
     } catch (error) {
-        return res.header('Content-Type', 'application/json').json({status: 'OK', results: []})
+        console.log(error);
+        return res
+            .status(500)
+            .header('Content-Type', 'application/json')
+            .json({ status: 'ERROR', message: 'No lyrics found' });
     }
 
     let index = null;
@@ -36,7 +53,7 @@ lyrics.get('/:id?', async (req, res) => {
         if (index >= 0 && index < results.length) {
             const lyrics = await results[index].lyrics();
             return res.json({ status: 'OK', ...results[index], lyrics });
-        } else return res.json({ status: 'ERROR', message: 'index out of range' });
+        } else return res.status(404).json({ status: 'ERROR', message: 'index out of range' });
     }
 
     return res.json({
@@ -45,9 +62,8 @@ lyrics.get('/:id?', async (req, res) => {
             item.lyrics = `${constructContentUri(req, index + 1)}`;
             item.lyricsOnly = `${constructContentUri(req, index + 1)}&lyricsonly=1`;
             return item;
-        })
-    }
-    );
+        }),
+    });
 });
 
 module.exports = lyrics;

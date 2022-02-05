@@ -4,7 +4,7 @@ const express = require('express');
 const anime = express.Router();
 
 anime.get('/:id?', async (req, res) => {
-    if (!req.query.q) return res.status(404).json({ code: 404, message: 'query required' });
+    if (!req.query.q) return res.status(404).json({ status: 'ERROR', message: 'query required' });
     let status = null;
     if (req.query.status) {
         switch (req.query.status) {
@@ -19,9 +19,18 @@ anime.get('/:id?', async (req, res) => {
                 break;
         }
     }
-    const results = status
-        ? await MALScraper.searchAnime(req.query.q, status)
-        : await MALScraper.searchAnime(req.query.q);
+
+    let results = null;
+    try {
+        results = status
+            ? await MALScraper.searchAnime(req.query.q, status)
+            : await MALScraper.searchAnime(req.query.q);
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .header('Content-Type', 'application/json')
+            .json({ status: 'ERROR', message: 'Server error' });
+    }
 
     let index = null;
     if (req.params.id) index = parseInt(req.params.id) - 1;
@@ -29,16 +38,17 @@ anime.get('/:id?', async (req, res) => {
 
     if (req.params.id) {
         if (index >= 0 && index < results.length)
-            return res.json(await results[index].fetchDetails());
-        else return res.json({ code: 404, message: 'index out of range' });
+            return res.json({ status: 'OK', ...(await results[index].fetchDetails()) });
+        else return res.status(404).json({ status: 'ERROR', message: 'index out of range' });
     }
 
-    return res.json(
-        results.map((item, index) => {
+    return res.json({
+        status: 'OK',
+        results: results.map((item, index) => {
             item.details = `${constructContentUri(req, index + 1)}`;
             return item;
-        })
-    );
+        }),
+    });
 });
 
 module.exports = anime;
