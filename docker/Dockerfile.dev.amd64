@@ -1,27 +1,21 @@
-FROM node:lts-slim AS builder
-ENV NODE_ENV=production
+FROM node:lts-slim AS development
+LABEL maintainer="Arville"
+
+ENV PORT=3500
+ENV PGID=1000
+ENV PUID=1000
+ENV NODE_ENV=development
+ENV GENIUS_ACCESS_TOKEN=
 
 WORKDIR /app
 
 # Cache and Install dependencies
 COPY package.json .
 COPY package-lock.json .
-RUN npm install --production
+RUN npm install
 
 # Copy app files
 COPY . .
-
-# Build
-RUN npm run build
-
-FROM node:lts-slim AS production
-LABEL maintainer="Arville"
-
-ENV PORT=3500
-ENV PGID=1000
-ENV PUID=1000
-ENV NODE_ENV=production
-ENV GENIUS_ACCESS_TOKEN=
 
 # Install Puppeteer dependency
 RUN apt-get update \
@@ -33,12 +27,11 @@ RUN apt-get update \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+RUN chown ${PUID}:${PGID} -R /app
 
-COPY --from=builder --chown=${PUID}:${PGID} /app/package.json /app/dist/* ./
-
+VOLUME [ "/app/src", "/app/modules" ]
 EXPOSE 3500
 
 USER ${PUID}:${PGID}
 
-CMD ["node", "app.js"]
+CMD ["npm", "run", "test"]

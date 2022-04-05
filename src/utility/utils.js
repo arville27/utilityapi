@@ -2,9 +2,10 @@ const puppeteer = require('puppeteer');
 
 async function getPptrSession() {
     const opt = { args: ['--no-sandbox', '--disable-setuid-sandbox'] };
-    if (process.env.ARCH === 'arm64')
+    if (process.arch === 'arm64')
         return await puppeteer.launch({ ...opt, executablePath: '/usr/bin/chromium' });
-    else if (process.env.ARCH === 'amd64') return await puppeteer.launch(opt);
+    else if (process.arch === 'x64')
+        return await puppeteer.launch({ ...opt, executablePath: '/usr/bin/google-chrome' });
 }
 
 function constructContentUri(request, id) {

@@ -1,20 +1,23 @@
 {
     "name": "utilityapi",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js",
-        "test": "nodemon ."
+        "start": "node .",
+        "test": "nodemon .",
+        "dev": "docker-compose -f ./docker/docker-compose.dev.yml up",
+        "build": "esbuild index.js --bundle --outfile=dist/app.js --minify --platform=node"
     },
     "dependencies": {
+        "esbuild": "^0.14.31",
         "express": "^4.17.2",
         "lyrics-scraper": "file:./modules/lyrics-scraper",
         "malscraper": "file:./modules/MALScraper"
     },
     "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "author": "Arville",
+    "license": "MIT",
     "devDependencies": {
         "nodemon": "^2.0.15"
     }

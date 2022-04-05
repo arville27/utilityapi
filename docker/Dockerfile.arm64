@@ -1,18 +1,29 @@
-FROM node:lts-slim
+FROM node:lts-slim AS builder
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+# Cache and Install dependencies
+COPY package.json .
+COPY package-lock.json .
+RUN npm install --production
+
+# Copy app files
+COPY . .
+
+# Build
+RUN npm run build
+
+FROM node:lts-slim AS production
 LABEL maintainer="Arville"
 
 ENV PORT=3500
 ENV PGID=1000
 ENV PUID=1000
-ENV ARCH=arm64
-ENV GENIUS_ACCESS_TOKEN=
 ENV NODE_ENV=production
+ENV GENIUS_ACCESS_TOKEN=
 
-WORKDIR /app
-COPY package.json /app
-COPY . /app
-
-# install puppeteer dependency
+# Install Puppeteer dependency
 RUN apt-get update \
     && apt-get install -y chromium  \
     --no-install-recommends \
@@ -20,11 +31,12 @@ RUN apt-get update \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install
-RUN chown ${PUID}:${PGID} -R /app
+WORKDIR /app
+
+COPY --from=builder --chown=${PUID}:${PGID} /app/package.json /app/dist/* ./
 
 EXPOSE 3500
 
 USER ${PUID}:${PGID}
 
-CMD ["npm", "start"]
+CMD ["node", "app.js"]
