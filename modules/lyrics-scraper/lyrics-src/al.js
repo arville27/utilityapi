@@ -34,8 +34,7 @@ const extractLyrics = (src, lang = 'jp') => {
         langSpecific.each((_, el) =>
             el.children.forEach((x) => {
                 if (x.next && x.name === 'br' && x.next.name === 'br') lyrics += '\n\n';
-                else if (x.type === 'text')
-                    lyrics += x.data.replace(/((\b\s+\b)|(\b\xa0+\b))/g, ' ');
+                else if (x.type === 'text') lyrics += x.data.replace(/((\b\s+\b)|(\b\xa0+\b))/g, ' ');
             })
         );
     }
