@@ -34,7 +34,7 @@ const getResults = async (query, count = 5) => {
     if (!process.env.GENIUS_ACCESS_TOKEN) return [];
     const url = 'https://api.genius.com/search';
     const opt = {
-        q: encodeURIComponent(query),
+        q: query,
         access_token: process.env.GENIUS_ACCESS_TOKEN,
     };
     let { data } = await axios.get(url, { params: opt });
