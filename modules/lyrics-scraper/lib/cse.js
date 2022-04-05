@@ -1,6 +1,5 @@
 const cheerio = require('cheerio');
-const { getPptrSession } = require('../../../utility/utils');
-
+const { getPptrSession } = require('../../../src/utility/utils');
 
 const getSources = async (keyword, cseId) => {
     const BASE = 'https://cse.google.com/cse';
@@ -16,9 +15,7 @@ const getSources = async (keyword, cseId) => {
         throw Error('Invalid cse id');
     }
 
-    const results = await page.$$eval('.gsc-webResult .gsc-result', (res) =>
-        res.map((x) => x.outerHTML)
-    );
+    const results = await page.$$eval('.gsc-webResult .gsc-result', (res) => res.map((x) => x.outerHTML));
 
     await browser.close();
     if (results.length == 1 && cheerio.load(results[0]).text().indexOf('http') === -1) {
