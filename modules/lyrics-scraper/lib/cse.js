@@ -1,11 +1,11 @@
 const cheerio = require('cheerio');
-const { getPptrSession } = require('../../../src/utility/utils');
+const { pptr } = require('../../../src/utility/utils');
 
 const getSources = async (keyword, cseId) => {
     const BASE = 'https://cse.google.com/cse';
 
     const cseEndpoint = `${BASE}?cx=${cseId}&q=`;
-    const browser = await getPptrSession();
+    const browser = await pptr;
     const page = await browser.newPage();
 
     await page.goto(`${cseEndpoint}${keyword}`);
@@ -17,7 +17,6 @@ const getSources = async (keyword, cseId) => {
 
     const results = await page.$$eval('.gsc-webResult .gsc-result', (res) => res.map((x) => x.outerHTML));
 
-    await browser.close();
     if (results.length == 1 && cheerio.load(results[0]).text().indexOf('http') === -1) {
         return [];
     }
