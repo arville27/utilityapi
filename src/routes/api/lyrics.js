@@ -24,7 +24,7 @@ lyrics.get('/:id?', async (req, res) => {
     }
 
     if (provider.length === 0) {
-        return res.status(404).header('Content-Type', 'application/json').json({
+        return res.status(404).json({
             status: 'ERROR',
             message: 'Please provide a valid lyrics provider',
         });
@@ -35,19 +35,16 @@ lyrics.get('/:id?', async (req, res) => {
         results = await searchLyrics(req.query.q, provider);
     } catch (error) {
         console.log(error);
-        return res
-            .status(500)
-            .header('Content-Type', 'application/json')
-            .json({ status: 'ERROR', message: 'No lyrics found' });
+        return res.status(500).json({ status: 'ERROR', message: 'No lyrics found' });
     }
 
     let index = null;
     if (req.params.id) index = parseInt(req.params.id) - 1;
 
-    if (req.query.lyricsonly && req.query.lyricsonly == '1')
-        return res.header('Content-Type', 'text/plain').send(await results[index].lyrics());
-
-    res.header('Content-Type', 'application/json');
+    if (req.query.lyricsonly && req.query.lyricsonly == '1') {
+        res.header('Content-Type', 'text/plain');
+        return res.send(await results[index].lyrics());
+    }
 
     if (req.params.id) {
         if (index >= 0 && index < results.length) {

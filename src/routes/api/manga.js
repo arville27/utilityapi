@@ -9,7 +9,6 @@ manga.get('/:id?', async (req, res) => {
 
     let index = null;
     if (req.params.id) index = parseInt(req.params.id) - 1;
-    res.header('Content-Type', 'application/json');
 
     if (req.params.id) {
         if (index >= 0 && index < results.length)

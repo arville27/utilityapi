@@ -27,14 +27,11 @@ anime.get('/:id?', async (req, res) => {
             : await MALScraper.searchAnime(req.query.q);
     } catch (error) {
         console.log(error);
-        res.status(500)
-            .header('Content-Type', 'application/json')
-            .json({ status: 'ERROR', message: 'Server error' });
+        res.status(500).json({ status: 'ERROR', message: 'Server error' });
     }
 
     let index = null;
     if (req.params.id) index = parseInt(req.params.id) - 1;
-    res.header('Content-Type', 'application/json');
 
     if (req.params.id) {
         if (index >= 0 && index < results.length)
