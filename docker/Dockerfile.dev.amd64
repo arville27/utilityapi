@@ -1,6 +1,7 @@
 FROM node:lts-slim AS development
 LABEL maintainer="Arville"
 
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PORT=3500
 ENV PGID=1000
 ENV PUID=1000
