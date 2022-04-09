@@ -27,7 +27,7 @@ anime.get('/:id?', async (req, res) => {
             : await MALScraper.searchAnime(req.query.q);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ status: 'ERROR', message: 'Server error' });
+        return res.status(500).json({ status: 'ERROR', message: 'Server error' });
     }
 
     let index = null;
