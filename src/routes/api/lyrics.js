@@ -5,7 +5,7 @@ const lyrics = express.Router();
 
 lyrics.get('/:id?', async (req, res) => {
     if (!req.query.q) return res.status(404).json({ status: 'ERROR', message: 'query required' });
-    let provider = [Provider.LN, Provider.GENIUS];
+    let provider = [Provider.LN, Provider.GENIUS, Provider.AL];
     if (typeof req.query.q === 'string') {
         if (req.query.p) {
             switch (req.query.p) {
@@ -15,12 +15,15 @@ lyrics.get('/:id?', async (req, res) => {
                 case 'genius':
                     provider = [Provider.GENIUS];
                     break;
+                case 'al':
+                    provider = [Provider.AL];
+                    break;
                 default:
                     provider = [];
             }
         }
     } else {
-        provider = req.query.q.filter((provider) => ['ln', 'genius'].includes(provider));
+        provider = req.query.q.filter((provider) => ['ln', 'genius', 'al'].includes(provider));
     }
 
     if (provider.length === 0) {

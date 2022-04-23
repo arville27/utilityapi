@@ -72,7 +72,7 @@ const getResults = async (query) => {
             const { $, url } = x;
             return {
                 ...extractInfo($),
-                lyrics: extractLyrics($),
+                lyrics: async () => extractLyrics($),
                 src: url,
                 provider: 'AnimeLyrics',
             };
