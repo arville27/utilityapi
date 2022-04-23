@@ -15,11 +15,9 @@ const Provider = {
  * @param {Object[]} Provider
  */
 const searchLyrics = async (query, Provider) => {
-    let results = [];
-    for (const prov of Provider) {
-        const indivProvRes = await prov.getResults(query);
-        results = results.concat(indivProvRes);
-    }
+    let results = Provider.map((provider) => provider.getResults(query));
+    results = await Promise.all(results);
+    results = results.reduce((total, result) => [...total, ...result], []);
     if (results.length == 0) throw Error('No lyrics found');
     return results;
 };
