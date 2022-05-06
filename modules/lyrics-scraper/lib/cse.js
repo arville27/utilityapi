@@ -16,6 +16,7 @@ const getSources = async (keyword, cseId) => {
     }
 
     const results = await page.$$eval('.gsc-webResult .gsc-result', (res) => res.map((x) => x.outerHTML));
+    await page.close();
 
     if (results.length == 1 && cheerio.load(results[0]).text().indexOf('http') === -1) {
         return [];
