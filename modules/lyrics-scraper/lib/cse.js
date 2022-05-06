@@ -8,6 +8,12 @@ const getSources = async (keyword, cseId) => {
     const browser = await pptr;
     const page = await browser.newPage();
 
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
+        if (request.resourceType() === 'image') request.abort();
+        else request.continue();
+    });
+
     await page.goto(`${cseEndpoint}${keyword}`);
 
     if ((await page.title()).match(/error [0-9]*?/i)) {
